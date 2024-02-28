@@ -1,13 +1,20 @@
 package com.darshana.springsecurity.services.Impl;
 
+import com.darshana.springsecurity.dto.JwtAuthenticationResponse;
 import com.darshana.springsecurity.dto.SignUpRequest;
+import com.darshana.springsecurity.dto.SigninRequest;
 import com.darshana.springsecurity.entity.Role;
 import com.darshana.springsecurity.entity.User;
 import com.darshana.springsecurity.repository.UserRepository;
 import com.darshana.springsecurity.services.AuthenticationService;
+import com.darshana.springsecurity.services.JWTService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +23,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JWTService jwtService;
+
 
     public User signup(SignUpRequest signUpRequest) {
 
@@ -29,6 +41,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return userRepository.save(user);
 
+    }
+
+    public JwtAuthenticationResponse signin(SigninRequest signinRequest){
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword()));
+
+        var user = userRepository.findByEmail(signinRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
+
+        var jwt = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+
+        JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+
+        jwtAuthenticationResponse.setToken(jwt);
+        jwtAuthenticationResponse.setRefreshToken(refreshToken);
+
+        return jwtAuthenticationResponse;
     }
 
 

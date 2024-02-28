@@ -1,6 +1,8 @@
 package com.darshana.springsecurity.controller;
 
+import com.darshana.springsecurity.dto.JwtAuthenticationResponse;
 import com.darshana.springsecurity.dto.SignUpRequest;
+import com.darshana.springsecurity.dto.SigninRequest;
 import com.darshana.springsecurity.entity.User;
 import com.darshana.springsecurity.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,11 @@ public class AuthenticationController {
     public ResponseEntity<User> signup(@RequestBody SignUpRequest signUpRequest) {
         return ResponseEntity.ok(authenticationService.signup(signUpRequest));
 
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SigninRequest signinRequest){
+        return ResponseEntity.ok(authenticationService.signin(signinRequest));
     }
 
 }
