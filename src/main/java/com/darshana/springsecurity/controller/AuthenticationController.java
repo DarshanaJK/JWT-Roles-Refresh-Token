@@ -1,6 +1,7 @@
 package com.darshana.springsecurity.controller;
 
 import com.darshana.springsecurity.dto.JwtAuthenticationResponse;
+import com.darshana.springsecurity.dto.RefreshTokenRequest;
 import com.darshana.springsecurity.dto.SignUpRequest;
 import com.darshana.springsecurity.dto.SigninRequest;
 import com.darshana.springsecurity.entity.User;
@@ -28,6 +29,11 @@ public class AuthenticationController {
     @PostMapping("/signin")
     public ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SigninRequest signinRequest){
         return ResponseEntity.ok(authenticationService.signin(signinRequest));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest){
+        return ResponseEntity.ok(authenticationService.refreshToken(refreshTokenRequest));
     }
 
 }
